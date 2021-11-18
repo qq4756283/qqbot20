@@ -80,14 +80,8 @@ if ($.isNode()) {
             $.joylevel = 0;
             TempBaipiao = "";
             console.log(`******开始查询【京东账号${$.index}】${$.nickName || $.UserName}*********`);
-
             await TotalBean();
             await TotalBean2();
-
-            //if (!$.isLogin) {
-            //    await notify.sendNotify(`${$.name}cookie已失效 - ${$.UserName}`, `京东账号${$.index} ${$.UserName}\n尝试获取账号信息失败，或许已经失效，请重新获取Cookie。`);
-            //    continue;
-            //}
             await getJoyBaseInfo();
             await getJdZZ();
             await getMs();
@@ -101,6 +95,7 @@ if ($.isNode()) {
             await requestAlgo();
             await JxmcGetRequest();
             await bean();
+            await getJxFactory(); //京喜工厂
             await showMsg();
             if (intPerSent > 0) {
                 if ((i + 1) % intPerSent == 0) {
@@ -483,6 +478,79 @@ function TotalBean2() {
         });
     });
 }
+
+
+// 惊喜工厂信息查询
+function getJxFactory() {
+    return new Promise(async resolve => {
+        let infoMsg = "";
+        let strTemp = "";
+        await $.get(jxTaskurl('userinfo/GetUserInfo', `pin=&sharePin=&shareType=&materialTuanPin=&materialTuanId=&source=`, '_time,materialTuanId,materialTuanPin,pin,sharePin,shareType,source,zone'), async (err, resp, data) => {
+            try {
+                if (err) {
+                    $.jxFactoryInfo = "";
+                    //console.log("jx工厂查询失败"  + err)
+                } else {
+                    if (safeGet(data)) {
+                        data = JSON.parse(data);
+                        if (data['ret'] === 0) {
+                            data = data['data'];
+                            $.unActive = true; //标记是否开启了京喜活动或者选购了商品进行生产
+                            if (data.factoryList && data.productionList) {
+                                const production = data.productionList[0];
+                                const factory = data.factoryList[0];
+                                //const productionStage = data.productionStage;
+                                $.commodityDimId = production.commodityDimId;
+                                // subTitle = data.user.pin;
+                                await GetCommodityDetails(); //获取已选购的商品信息
+                                infoMsg = `${$.jxProductName}(${((production.investedElectric / production.needElectric) * 100).toFixed(0)}%`;
+                                if (production.investedElectric >= production.needElectric) {
+                                    if (production['exchangeStatus'] === 1) {
+                                        infoMsg = `${$.jxProductName}已可兑换`;
+                                        $.jxFactoryReceive = `${$.jxProductName}`;
+                                    }
+                                    if (production['exchangeStatus'] === 3) {
+                                        if (new Date().getHours() === 9) {
+                                            infoMsg = `兑换超时，请重选商品!`;
+                                        }
+                                    }
+                                    // await exchangeProNotify()
+                                } else {
+                                    strTemp = `,${((production.needElectric - production.investedElectric) / (2 * 60 * 60 * 24)).toFixed(0)}天)`;
+                                    if (strTemp == ",0天)")
+                                        infoMsg += ",今天)";
+                                    else
+                                        infoMsg += strTemp;
+                                }
+                                if (production.status === 3) {
+                                    infoMsg = "商品已失效，请重选商品!";
+                                }
+                            } else {
+                                $.unActive = false; //标记是否开启了京喜活动或者选购了商品进行生产
+                                if (!data.factoryList) {
+                                    infoMsg = ""
+                                    // $.msg($.name, '【提示】', `京东账号${$.index}[${$.nickName}]京喜工厂活动未开始\n请手动去京东APP->游戏与互动->查看更多->京喜工厂 开启活动`);
+                                } else if (data.factoryList && !data.productionList) {
+                                    infoMsg = ""
+                                }
+                            }
+                        }
+                    } else {
+                        console.log(`GetUserInfo异常：${JSON.stringify(data)}`)
+                    }
+                }
+                $.jxFactoryInfo = infoMsg;
+                // console.log(infoMsg);
+            } catch (e) {
+                $.logErr(e, resp)
+            }
+            finally {
+                resolve();
+            }
+        })
+    })
+}
+
 function getJingBeanBalanceDetail(page) {
     return new Promise(async resolve => {
         const options = {

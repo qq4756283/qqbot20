@@ -59,10 +59,10 @@ var pt_pin = "";
             } else {
                 console.log("Cookie有效")
                 if ($.isLogin) {
-                    var beanNum = ($.beanNum && $.beanNum > 0) ? "\n剩余京豆：" + $.beanNum : "";
+                    var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余京豆：" + $.beanNum : "";
                     if (isAdd) {
                         addCookie();
-                        await notify.sendNotify(`${$.name}`, "提交成功！\r账户🆔：" + $.nickName + "\r\n绑定QQ：" + qq + beanNum);
+                        await notify.sendNotify(`${$.name}`, "提交成功！\r账户🆔：" + $.nickName + "\r绑定QQ：" + qq + beanNum);
                     } else if (push) {
                         await notify.sendNotify(`${$.name}`, "账户🆔：" + $.nickName + "，有效✅" + beanNum);
                     }
