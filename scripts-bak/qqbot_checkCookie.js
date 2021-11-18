@@ -27,12 +27,12 @@ var pt_pin = "";
             pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
             pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
             $.UserName = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && pt_pin)
-            $.UserName2 = decodeURIComponent($.UserName);
+            $.UserName2 = decodeURI($.UserName);
             $.index = i + 1;
             $.isLogin = true;
             $.error = '';
             $.NoReturn = '';
-            $.nickName = "";
+            $.nickName = $.UserName2;
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
             if (isAdd) {
                 await TotalBean();
@@ -153,12 +153,12 @@ function isLoginByX1a0He() {
                 if (data) {
                     data = JSON.parse(data);
                     if (data.islogin === "1") {
-                        console.log(`使用X1a0He写的接口加强检测: Cookie有效\n`)
+                        //console.log(`使用X1a0He写的接口加强检测: Cookie有效\n`)
                     } else if (data.islogin === "0") {
                         $.isLogin = false;
-                        console.log(`使用X1a0He写的接口加强检测: Cookie无效\n`)
+                        //console.log(`使用X1a0He写的接口加强检测: Cookie无效\n`)
                     } else {
-                        console.log(`使用X1a0He写的接口加强检测: 未知返回，不作变更...\n`)
+                        //console.log(`使用X1a0He写的接口加强检测: 未知返回，不作变更...\n`)
                         $.error = `${$.nickName} :` + `使用X1a0He写的接口加强检测: 未知返回...\n`
                     }
                 }
