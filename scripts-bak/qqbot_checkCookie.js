@@ -34,7 +34,9 @@ var pt_pin = "";
             $.NoReturn = '';
             $.nickName = "";
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
-            await TotalBean();
+            if (isAdd) {
+                await TotalBean();
+            }
             if ($.NoReturn) {
                 console.log(`接口1检测失败，尝试使用接口2....\n`);
                 await isLoginByX1a0He();

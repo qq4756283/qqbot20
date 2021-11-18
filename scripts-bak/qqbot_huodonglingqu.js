@@ -5,18 +5,10 @@ const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 let allMessage2 = '';
 let allReceiveMessage = '';
 let allWarnMessage = '';
-let MessageUserGp2 = '';
-let MessageUserGp3 = '';
-let MessageUserGp4 = '';
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '';
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 let i = 0;
-
-
-let userIndex2 = -1;
-let userIndex3 = -1;
-let userIndex4 = -1;
 
 if ($.isNode()) {
     Object.keys(jdCookieNode).forEach((item) => {
@@ -53,8 +45,7 @@ if ($.isNode()) {
             $.joylevel = 0;
             await getjdfruit();
             await requestAlgo();
-            //await getJxFactory(); //京喜工厂
-            //await getDdFactoryInfo(); // 京东工厂
+            await getJxFactory(); //京喜工厂
             await showMsg();
         }
     }
@@ -78,42 +69,24 @@ if ($.isNode()) {
         $.done();
     })
 async function showMsg() {
-    if (MessageUserGp2) {
-        userIndex2 = MessageUserGp2.findIndex((item) => item === $.pt_pin);
-    }
-    if (MessageUserGp3) {
-        userIndex3 = MessageUserGp3.findIndex((item) => item === $.pt_pin);
-    }
-    if (MessageUserGp4) {
-        userIndex4 = MessageUserGp4.findIndex((item) => item === $.pt_pin);
-    }
     if ($.JdFarmProdName != "") {
         if ($.JdtreeEnergy != 0) {
             if ($.treeState === 2 || $.treeState === 3) {
-                if (userIndex2 == -1 && userIndex3 == -1 && userIndex4 == -1) {
-                    allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东农场)${$.JdFarmProdName} 可以兑换了\n`;
-                }
+                allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东农场)${$.JdFarmProdName} 可以兑换了\n`;
             }
         }
     }
     if ($.DdFactoryReceive) {
-        if (userIndex2 == -1 && userIndex3 == -1 && userIndex4 == -1) {
-            allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东工厂)${$.DdFactoryReceive}可以兑换了\n`;
-        }
+        allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东工厂)${$.DdFactoryReceive}可以兑换了\n`;
     }
     if ($.jxFactoryReceive) {
-        if (userIndex2 == -1 && userIndex3 == -1 && userIndex4 == -1) {
-            allReceiveMessage += `【账号${$.nickName || $.UserName}】(京喜工厂)${$.jxFactoryReceive}可以兑换了 \n`;
-        }
-
+        allReceiveMessage += `【账号${$.nickName || $.UserName}】(京喜工厂)${$.jxFactoryReceive}可以兑换了 \n`;
     }
     const initPetTownRes = await PetRequest('initPetTown');
     if (initPetTownRes.code === '0' && initPetTownRes.resultCode === '0' && initPetTownRes.message === 'success') {
         $.petInfo = initPetTownRes.result;
         if ($.petInfo.petStatus === 5) {
-            if (userIndex2 == -1 && userIndex3 == -1 && userIndex4 == -1) {
-                allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东萌宠)${$.petInfo.goodsInfo.goodsName}可以兑换了!\n`;
-            }
+            allReceiveMessage += `【账号${$.nickName || $.UserName}】(东东萌宠)${$.petInfo.goodsInfo.goodsName}可以兑换了!\n`;
         }
     }
 }
@@ -167,7 +140,6 @@ async function getjdfruit() {
         })
     })
 }
-
 
 async function PetRequest(function_id, body = {}) {
     return new Promise((resolve, reject) => {
@@ -333,87 +305,6 @@ function GetCommodityDetails() {
             }
         })
     })
-}
-
-// 东东工厂信息查询
-async function getDdFactoryInfo() {
-    // 当心仪的商品存在，并且收集起来的电量满足当前商品所需，就投入
-    let infoMsg = "";
-    return new Promise(resolve => {
-        $.post(ddFactoryTaskUrl('jdfactory_getHomeData'), async (err, resp, data) => {
-            try {
-                if (err) {
-                    $.ddFactoryInfo = "获取失败!"
-                    /*console.log(`${JSON.stringify(err)}`)
-                    console.log(`${$.name} API请求失败，请检查网路重试`)*/
-                } else {
-                    if (safeGet(data)) {
-                        data = JSON.parse(data);
-                        if (data.data.bizCode === 0) {
-                            // $.newUser = data.data.result.newUser;
-                            //let wantProduct = $.isNode() ? (process.env.FACTORAY_WANTPRODUCT_NAME ? process.env.FACTORAY_WANTPRODUCT_NAME : wantProduct) : ($.getdata('FACTORAY_WANTPRODUCT_NAME') ? $.getdata('FACTORAY_WANTPRODUCT_NAME') : wantProduct);
-                            if (data.data.result.factoryInfo) {
-                                let {
-                                    totalScore,
-                                    useScore,
-                                    produceScore,
-                                    remainScore,
-                                    couponCount,
-                                    name
-                                } = data.data.result.factoryInfo;
-                                if (couponCount == 0) {
-                                    infoMsg = `${name} 没货了,死了这条心吧!`
-                                } else {
-                                    infoMsg = `${name}(${((remainScore * 1 + useScore * 1) / (totalScore * 1) * 100).toFixed(0)}%,剩${couponCount})`
-                                }
-                                if (((remainScore * 1 + useScore * 1) >= totalScore * 1 + 100000) && (couponCount * 1 > 0)) {
-                                    // await jdfactory_addEnergy();
-                                    infoMsg = `${name} 可以兑换了!`
-                                    $.DdFactoryReceive = `${name}`;
-
-                                }
-
-                            } else {
-                                infoMsg = ``
-                            }
-                        } else {
-                            $.ddFactoryInfo = ""
-                        }
-                    }
-                }
-                $.ddFactoryInfo = infoMsg;
-            } catch (e) {
-                $.logErr(e, resp)
-            }
-            finally {
-                resolve();
-            }
-        })
-    })
-}
-
-function ddFactoryTaskUrl(function_id, body = {}, function_id2) {
-    let url = `${JD_API_HOST}`;
-    if (function_id2) {
-        url += `?functionId=${function_id2}`;
-    }
-    return {
-        url,
-        body: `functionId=${function_id}&body=${escape(JSON.stringify(body))}&client=wh5&clientVersion=1.1.0`,
-        headers: {
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-cn",
-            "Connection": "keep-alive",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Cookie": cookie,
-            "Host": "api.m.jd.com",
-            "Origin": "https://h5.m.jd.com",
-            "Referer": "https://h5.m.jd.com/babelDiy/Zeus/2uSsV2wHEkySvompfjB43nuKkcHp/index.html",
-            "User-Agent": "jdapp;iPhone;9.3.4;14.3;88732f840b77821b345bf07fd71f609e6ff12f43;network/4g;ADID/1C141FDD-C62F-425B-8033-9AAB7E4AE6A3;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone11,8;addressid/2005183373;supportBestPay/0;appBuild/167502;jdSupportDarkMode/0;pv/414.19;apprpd/Babel_Native;ref/TTTChannelViewContoller;psq/5;ads/;psn/88732f840b77821b345bf07fd71f609e6ff12f43|1701;jdv/0|iosapp|t_335139774|appshare|CopyURL|1610885480412|1610885486;adk/;app_device/IOS;pap/JA2015_311210|9.3.4|IOS 14.3;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
-        },
-        timeout: 10000,
-    }
 }
 
 Date.prototype.Format = function (fmt) {
