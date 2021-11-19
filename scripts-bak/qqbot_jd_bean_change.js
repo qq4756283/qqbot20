@@ -480,6 +480,28 @@ function TotalBean2() {
 }
 
 
+// 惊喜的Taskurl
+function jxTaskurl(functionId, body = '', stk) {
+	let url = `https://m.jingxi.com/dreamfactory/${functionId}?zone=dream_factory&${body}&sceneval=2&g_login_type=1&_time=${Date.now()}&_=${Date.now() + 2}&_ste=1`
+		url += `&h5st=${decrypt(Date.now(), stk, '', url)}`
+		if (stk) {
+			url += `&_stk=${encodeURIComponent(stk)}`;
+		}
+		return {
+		url,
+		headers: {
+			'Cookie': cookie,
+			'Host': 'm.jingxi.com',
+			'Accept': '*/*',
+			'Connection': 'keep-alive',
+			'User-Agent': functionId === 'AssistFriend' ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36" : 'jdpingou',
+			'Accept-Language': 'zh-cn',
+			'Referer': 'https://wqsd.jd.com/pingou/dream_factory/index.html',
+			'Accept-Encoding': 'gzip, deflate, br',
+		}
+	}
+}
+
 // 惊喜工厂信息查询
 function getJxFactory() {
     return new Promise(async resolve => {
