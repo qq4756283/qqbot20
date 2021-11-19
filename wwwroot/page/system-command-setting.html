@@ -24,19 +24,27 @@
                 </p>
             </template>
         </alert>
-        <i-form :label-width="100" style="padding: 0 20px">
+        <i-form :label-width="150" style="padding: 0 20px">
 
             <Divider plain>用户指令定义配置</Divider>
-            <form-item :label="item.Key" v-for="item in Commands.filter((t)=>!t.IsManager)">
-                <i-input type="text" v-model="item.Command">
-                </i-input>
-            </form-item>
 
+            <row>
+                <i-col span="12" v-for="item in Commands.filter((t)=>!t.IsManager)">
+                    <form-item :label="item.Key">
+                        <i-input type="text" v-model="item.Command">
+                        </i-input>
+                    </form-item>
+                </i-col>
+            </row>
             <Divider plain>管理员指令定义配置</Divider>
-            <form-item :label="item.Key" v-for="item in Commands.filter((t)=>t.IsManager)">
-                <i-input type="text" v-model="item.Command">
-                </i-input>
-            </form-item>
+            <row>
+                <i-col span="12" v-for="item in Commands.filter((t)=>t.IsManager)">
+                    <form-item :label="item.Key">
+                        <i-input type="text" v-model="item.Command">
+                        </i-input>
+                    </form-item>
+                </i-col>
+            </row>
 
             <form-item>
                 <i-button type="primary" @click="handleSubmit" style="float:right">保存</i-button>

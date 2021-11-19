@@ -52,21 +52,21 @@
             methods: {
                 getCookieById() {
                     axios.get('/api/JDCookie/' + this.EditCookie.Id)
-                        .then(function(response) {
+                        .then(function (response) {
                             editCookie.EditCookie = response;
                             editCookie.EditCookie.TQLPanelCookies = [];
                             for (var x = 0; x < editCookie.EditCookie.QLPanelCookies.length; x++) {
                                 editCookie.EditCookie.TQLPanelCookies.push(editCookie.EditCookie.QLPanelCookies[x].QLPanelId)
                             }
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             editCookie.$Notice.error({
                                 title: '请求错误',
                                 desc: error
                             })
                         });
                 },
-                queryString: function(name) {
+                queryString: function (name) {
                     var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
                     var r = window.location.search.substr(1).match(reg);
                     if (r != null) {
@@ -76,7 +76,7 @@
                 },
                 getPanels() {
                     axios.get('/api/QLPanel')
-                        .then(function(response) {
+                        .then(function (response) {
                             for (var i = 0; i < response.length; i++) {
                                 if (!response[i].Enable) {
                                     editCookie.AllPanels.push({
@@ -88,7 +88,7 @@
                             console.log(editCookie.AllPanels)
                             editCookie.getCookieById();
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             editCookie.$Notice.error({
                                 title: '请求错误',
                                 desc: error
@@ -105,21 +105,13 @@
                                     Mode: 2
                                 });
                             }
-                            this.$Modal.confirm({
-                                title: '提交确认',
-                                content: '确定提交修改的账号信息吗？',
-                                okText: '确定',
-                                cancelText: '取消',
-                                onOk: () => {
-                                    axios.put('/api/JDCookie', this.EditCookie)
-                                        .then(function(response) {
-                                            parent.layer.closeAll();
-                                        })
-                                        .catch(function(error) {
-                                            console.log(error);
-                                        });
-                                }
-                            });
+                            axios.put('/api/JDCookie', this.EditCookie)
+                                .then(function () {
+                                    parent.layer.closeAll();
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
                         } else {
                             this.$Notice.error({
                                 title: '表单验证失败',

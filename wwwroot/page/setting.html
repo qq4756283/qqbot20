@@ -36,6 +36,14 @@
             </blockquote>
             <row>
                 <i-col span="12">
+                    <form-item label="AppKey" prop="AppKey">
+                        <i-input type="text" name="AppKey" placeholder="使用该值请求获取到认证授权后访问API" v-model="SystemConfig.AppKey">
+                        </i-input>
+                    </form-item>
+                </i-col>
+            </row>
+            <row>
+                <i-col span="12">
                     <form-item label="Http协议" prop="cqhttpHttp">
                         <i-input type="text" name="cqhttpHttp" placeholder="填写示例：172.17.0.1:8000（只输入ip和端口号即可）" v-model="SystemConfig.cqhttpHttp">
                             <span slot="prepend">http://</span>
@@ -100,6 +108,14 @@
                                 <input type="checkbox" name="AddGroup" id="AddGroup" v-model="SystemConfig.AddGroup">
                                 <label for="AddGroup">自动通过</label>
                             </span>
+                        </i-input>
+                    </form-item>
+                </i-col>
+            </row>
+            <row>
+                <i-col span="24">
+                    <form-item label="QQ黑名单" prop="BlackQQ">
+                        <i-input type="textarea" name="BlackQQ" placeholder="QQ黑名单，多个用逗号隔开" v-model="SystemConfig.BlackQQ">
                         </i-input>
                     </form-item>
                 </i-col>

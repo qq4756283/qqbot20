@@ -2,11 +2,11 @@ layui.define(['jquery', 'layer'], function (exports) {
     var $ = layui.jquery;
     var layer = layui.layer;
     var obj = {
-        ajax: function (url, type, data, callback,contentType) {
+        ajax: function (url, type, data, callback, contentType) {
             $.ajax({
                 url: "/api" + url,
                 type: type,
-                contentType:"application/json",
+                contentType: "application/json",
                 data: data,
                 beforeSend: function (request) {
                     request.setRequestHeader("Authorization", "Bearer " + layui.data("token").token);
@@ -19,6 +19,10 @@ layui.define(['jquery', 'layer'], function (exports) {
                     }
                 },
                 error: function (e) {
+                    if (e.status == 500) {
+                        layer.msg("服务似乎出了什么问题，请联系开发者，或者尝试通过系统设置>数据迁移解决该问题！", { icon: 5 });
+                        return;
+                    }
                     if (e.status == 401) {
                         window.top.location = "/login.html"
                     }
