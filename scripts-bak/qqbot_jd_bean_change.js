@@ -272,13 +272,6 @@ async function showMsg() {
     if ($.jxFactoryInfo) {
         ReturnMessage += `【京喜工厂】${$.jxFactoryInfo}\n`
     }
-    if ($.ddFactoryInfo) {
-        ReturnMessage += `【东东工厂】${$.ddFactoryInfo}\n`
-    }
-    if ($.DdFactoryReceive) {
-        allReceiveMessage += `【账号${IndexAll} ${$.nickName || $.UserName}】${$.DdFactoryReceive} (东东工厂)\n`;
-        TempBaipiao += `【东东工厂】${$.ddFactoryInfo} 可以兑换了!\n`;
-    }
     if ($.jxFactoryReceive) {
         allReceiveMessage += `【账号${IndexAll} ${$.nickName || $.UserName}】${$.jxFactoryReceive} (京喜工厂)\n`;
         TempBaipiao += `【京喜工厂】${$.jxFactoryReceive} 可以兑换了!\n`;
@@ -511,7 +504,6 @@ function getJxFactory() {
             try {
                 if (err) {
                     $.jxFactoryInfo = "";
-                    //console.log("jx工厂查询失败"  + err)
                 } else {
                     if (safeGet(data)) {
                         data = JSON.parse(data);
@@ -561,8 +553,8 @@ function getJxFactory() {
                         console.log(`GetUserInfo异常：${JSON.stringify(data)}`)
                     }
                 }
+                console.log("惊喜工厂信息："+infoMsg);
                 $.jxFactoryInfo = infoMsg;
-                // console.log(infoMsg);
             } catch (e) {
                 $.logErr(e, resp)
             }
@@ -571,6 +563,36 @@ function getJxFactory() {
             }
         })
     })
+}
+
+//惊喜查询当前生产的商品名称
+function GetCommodityDetails() {
+	return new Promise(async resolve => {
+		// const url = `/dreamfactory/diminfo/GetCommodityDetails?zone=dream_factory&sceneval=2&g_login_type=1&commodityId=${$.commodityDimId}`;
+		$.get(jxTaskurl('diminfo/GetCommodityDetails', `commodityId=${$.commodityDimId}`, `_time,commodityId,zone`), (err, resp, data) => {
+			try {
+				if (err) {
+					console.log(`${JSON.stringify(err)}`)
+					console.log(`GetCommodityDetails API请求失败，请检查网路重试`)
+				} else {
+					if (safeGet(data)) {
+						data = JSON.parse(data);
+						if (data['ret'] === 0) {
+							data = data['data'];
+							$.jxProductName = data['commodityList'][0].name;
+						} else {
+							console.log(`GetCommodityDetails异常：${JSON.stringify(data)}`)
+						}
+					}
+				}
+			} catch (e) {
+				$.logErr(e, resp)
+			}
+			finally {
+				resolve();
+			}
+		})
+	})
 }
 
 function getJingBeanBalanceDetail(page) {
