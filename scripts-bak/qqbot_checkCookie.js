@@ -34,11 +34,8 @@ var pt_pin = "";
             $.NoReturn = '';
             $.nickName = $.UserName2;
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
-            if (isAdd) {
-                await TotalBean();
-            }
+            await TotalBean();
             if ($.NoReturn) {
-                console.log(`接口1检测失败，尝试使用接口2....\n`);
                 await isLoginByX1a0He();
             } else {
                 if ($.isLogin) {
@@ -62,7 +59,7 @@ var pt_pin = "";
                     var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余京豆：" + $.beanNum : "";
                     if (isAdd) {
                         addCookie();
-                        await notify.sendNotify(`${$.name}`, "提交成功！\r账户🆔：" + $.nickName + "\r绑定QQ：" + qq + beanNum);
+                        await notify.sendNotify(`${$.name}`, "您的账号提交成功！\r账户🆔：" + $.nickName + "\r绑定QQ：" + qq + beanNum);
                     } else if (push) {
                         await notify.sendNotify(`${$.name}`, "账户🆔：" + $.nickName + "，有效✅" + beanNum);
                     }
@@ -153,12 +150,9 @@ function isLoginByX1a0He() {
                 if (data) {
                     data = JSON.parse(data);
                     if (data.islogin === "1") {
-                        //console.log(`使用X1a0He写的接口加强检测: Cookie有效\n`)
                     } else if (data.islogin === "0") {
                         $.isLogin = false;
-                        //console.log(`使用X1a0He写的接口加强检测: Cookie无效\n`)
                     } else {
-                        //console.log(`使用X1a0He写的接口加强检测: 未知返回，不作变更...\n`)
                         $.error = `${$.nickName} :` + `使用X1a0He写的接口加强检测: 未知返回...\n`
                     }
                 }

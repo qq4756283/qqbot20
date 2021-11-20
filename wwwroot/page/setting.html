@@ -121,6 +121,8 @@
                 </i-col>
             </row>
             <form-item>
+                <Checkbox v-model="SystemConfig.AddCookieCotify">添加Cookie管理员通知</Checkbox>
+                <Checkbox v-model="SystemConfig.DisableCookieCotify">失效Cookie管理员通知</Checkbox>
                 <i-button type="primary" @click="handleSubmit('SystemConfig')" style="float:right">保存</i-button>
             </form-item>
         </i-form>
@@ -203,7 +205,12 @@
                         if (systemConfigApp.SystemConfig.SMSService) {
                             systemConfigApp.SystemConfig.SMSService = systemConfigApp.SystemConfig.SMSService.replace("http://", "")
                         }
-                    });
+                    })
+                        .catch(function (error) {
+                            systemConfigApp.$Notice.error({
+                                desc: error
+                            });
+                        });
                 }
             },
             mounted() {
